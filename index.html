@@ -58,8 +58,6 @@
             font-size: 1.1em; 
             margin-bottom: 8px; 
             color: #333; 
-            display: flex;
-            justify-content: space-between;
         }
 
         .waste-tag { 
@@ -144,10 +142,10 @@
 
 <div class="container">
     <div class="info-box">
-        <strong>⚠️ Instructies:</strong><br>
+        <strong>⚠️ Belangrijk:</strong><br>
         • Ochtend: Water, Witlof/Andijvie, Brood (geen schimmel!), Hooi.<br>
         • Avond: Witlof & Water check.<br>
-        • Check gezondheid: Niet suf/half dood liggen?
+        • Check gezondheid: Liggen ze er goed bij?
     </div>
 
     <div id="calendar-container"></div>
@@ -155,11 +153,10 @@
 
 <div class="footer-contact-bar">
     <a href="https://wa.me/31623568453" class="contact-button"><i class="fab fa-whatsapp"></i> Bram</a>
-    <a href="https://wa.me/31620915222" class="contact-button"><i class="fab fa-whatsapp"></i> Amber</a>
+    <a href="https://wa.me/31657505759" class="contact-button"><i class="fab fa-whatsapp"></i> Amber</a>
 </div>
 
 <script>
-    // Jouw Firebase Configuratie
     const firebaseConfig = {
         apiKey: "AIzaSyBXjLtvpTSu5F6cSEAj_MbDV_nHHJqvuN0",
         authDomain: "konijnenplanning.firebaseapp.com",
@@ -174,10 +171,11 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
+    // Bijgewerkte afvalkalender
     const wasteSchedule = { 
-        "2026-03-27": "🚛 GRIP wagen", 
-        "2026-04-03": "🌿 GFT + 📄 Papier", 
-        "2026-04-04": "🟠 Plastic/Metaal", 
+        "2026-03-27": "🚛 GRIP / GIF afval", 
+        "2026-04-03": "🌿 GFT + 📄 Karton", 
+        "2026-04-04": "🟠 Plastic", 
         "2026-04-10": "🗑️ Restafval" 
     };
 
@@ -197,12 +195,12 @@
             card.className = 'day-card';
             card.innerHTML = `
                 <div class="date-header">${displayDate}</div>
-                ${isWaste ? `<div class="waste-tag">${isWaste}</div>` : ''}
+                ${isWaste ? `<div class="waste-tag"><i class="fas fa-trash"></i> ${isWaste} buiten zetten!</div>` : ''}
                 
                 <div class="task-group">
                     <strong>☀️ Ochtend</strong>
                     <label class="task-item">
-                        <input type="checkbox" id="${dateStr}-am-check" onchange="updateFirebase('${dateStr}', 'am', 'check', this.checked)"> Eten & Water gegeven
+                        <input type="checkbox" id="${dateStr}-am-check" onchange="updateFirebase('${dateStr}', 'am', 'check', this.checked)"> Eten & Water ✅
                     </label>
                     <select id="${dateStr}-am-who" class="assignee-select" onchange="updateFirebase('${dateStr}', 'am', 'who', this.value)">
                         <option value="">Wie voerde er?</option>
@@ -214,7 +212,7 @@
                 <div class="task-group">
                     <strong>🌙 Avond</strong>
                     <label class="task-item">
-                        <input type="checkbox" id="${dateStr}-pm-check" onchange="updateFirebase('${dateStr}', 'pm', 'check', this.checked)"> Witlof & Water check
+                        <input type="checkbox" id="${dateStr}-pm-check" onchange="updateFirebase('${dateStr}', 'pm', 'check', this.checked)"> Witlof check ✅
                     </label>
                     <select id="${dateStr}-pm-who" class="assignee-select" onchange="updateFirebase('${dateStr}', 'pm', 'who', this.value)">
                         <option value="">Wie voerde er?</option>
@@ -227,7 +225,6 @@
             currentDate.setDate(currentDate.getDate() + 1);
         }
 
-        // Luister naar live updates
         db.ref('konijnen_status').on('value', (snapshot) => {
             const data = snapshot.val();
             if (data) {
