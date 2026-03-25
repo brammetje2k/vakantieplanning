@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🐰 Familie Planner - Live</title>
+    <title>🐰 Familie Planner - TEST VERSIE</title>
     
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
@@ -15,12 +15,13 @@
         
         #login-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: var(--primary); z-index: 2000; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; }
         .login-box { background: white; padding: 30px; border-radius: 20px; color: #333; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.2); width: 85%; max-width: 320px; }
-        #wachtwoord-veld { width: 100%; padding: 15px; margin: 15px 0; border: 2px solid #ddd; border-radius: 10px; font-size: 1.1em; text-align: center; box-sizing: border-box; }
+        #wachtwoord-veld { width: 100%; padding: 15px; margin: 15px 0; border: 2px solid #ddd; border-radius: 10px; font-size: 1.1em; text-align: center; }
         .login-btn { background: var(--primary); color: white; border: none; padding: 12px 30px; border-radius: 10px; font-weight: bold; cursor: pointer; width: 100%; }
 
         #main-content { display: none; width: 100%; max-width: 450px; padding-bottom: 120px; }
-        .info-box { background: #fff8e1; padding: 12px; border-radius: 12px; font-size: 0.8em; margin-bottom: 15px; border-left: 5px solid var(--secondary); }
+        .test-btn { background: #555; color: white; border: none; padding: 5px 10px; border-radius: 5px; font-size: 0.7em; margin-bottom: 10px; cursor: pointer; }
         
+        .info-box { background: #fff8e1; padding: 12px; border-radius: 12px; font-size: 0.8em; margin-bottom: 15px; border-left: 5px solid var(--secondary); }
         .day-card { background: var(--card); border-radius: 15px; padding: 15px; margin-bottom: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.08); border-left: 5px solid var(--primary); }
         .date-header { font-weight: bold; font-size: 1.1em; color: #333; margin-bottom: 10px; border-bottom: 1px solid #eee; padding-bottom: 5px; }
         
@@ -28,7 +29,9 @@
         .bread-alert { background: #e3f2fd; color: #0277bd; padding: 8px 10px; border-radius: 6px; font-size: 0.85em; font-weight: bold; margin-bottom: 10px; border: 1px solid #bbdefb; }
         
         .task-group { margin-top: 10px; padding: 12px; background: #f8faf8; border-radius: 10px; border: 1px solid #edf0ed; position: relative; }
-        .task-group.late-warning { background: #ffebee; border: 2px solid var(--late); }
+        
+        /* De rode waarschuwing */
+        .task-group.late-warning { background: #ffebee !important; border: 2px solid var(--late) !important; }
         .late-text { color: var(--late); font-weight: bold; font-size: 0.75em; display: none; margin-bottom: 5px; }
         .task-group.late-warning .late-text { display: block; }
 
@@ -37,8 +40,6 @@
         .task-item.fish { color: var(--fish); font-weight: 600; }
         
         input[type="checkbox"] { width: 22px; height: 22px; margin-right: 12px; accent-color: var(--primary); cursor: pointer; }
-        input[type="checkbox"].fish-check { accent-color: var(--fish); }
-
         .assignee-select { width: 100%; padding: 10px; margin-top: 8px; border: 1px solid #ccc; border-radius: 8px; background: white; font-size: 0.85em; }
         
         .footer-contact-bar { position: fixed; bottom: 0; left: 0; width: 100%; background: white; display: flex; justify-content: space-around; padding: 12px 5px; box-shadow: 0 -4px 15px rgba(0,0,0,0.1); z-index: 1000; }
@@ -52,43 +53,40 @@
         <h3>Toegang</h3>
         <input type="text" id="wachtwoord-veld" placeholder="Wachtwoord..." autocomplete="off">
         <button class="login-btn" onclick="checkPin()">Open Planner</button>
-        <p id="error-msg" style="color:red; display:none; font-size: 0.8em; margin-top:10px;">Onjuiste code!</p>
     </div>
 </div>
 
 <div id="main-content">
-    <header style="text-align:center; margin-bottom:15px;">
+    <header style="text-align:center; margin-bottom:10px;">
         <h1 style="margin:0;">🐰 Familie Planner</h1>
-        <div style="font-size: 0.7em; color: var(--primary); font-weight: bold;">● LIVE VERBONDEN</div>
+        <button class="test-btn" onclick="runTest()">🛠️ Test de rode melding</button>
     </header>
 
     <div class="info-box">
-        <strong>⚠️ Deadline herinnering:</strong><br>
-        • Ochtendronde: Klaar voor <b>11:00 uur</b>.<br>
-        • Avondronde: Klaar voor <b>20:00 uur</b>.<br>
-        Vissen alleen in de ochtend voeren.
+        ⚠️ <b>Deadlines:</b> Ochtend 11:00 | Avond 20:00.
     </div>
 
     <div id="calendar-container"></div>
 
     <div class="footer-contact-bar">
-        <a href="https://wa.me/31623568453" class="contact-button"><i class="fab fa-whatsapp"></i> Bram</a>
-        <a href="https://wa.me/31657505759" class="contact-button"><i class="fab fa-whatsapp"></i> Amber</a>
-        <a href="https://wa.me/31620915222" class="contact-button"><i class="fab fa-whatsapp"></i> Sylvia</a>
+        <a href="https://wa.me/31623568453" class="contact-button">Bram</a>
+        <a href="https://wa.me/31657505759" class="contact-button">Amber</a>
+        <a href="https://wa.me/31620915222" class="contact-button">Sylvia</a>
     </div>
 </div>
 
 <script>
+    let testMode = false;
+
     function checkPin() {
         if(document.getElementById('wachtwoord-veld').value.trim() === "Borrelplank") {
             document.getElementById('login-overlay').style.display = 'none';
             document.getElementById('main-content').style.display = 'block';
             renderCalendar();
-        } else {
-            document.getElementById('error-msg').style.display = 'block';
         }
     }
 
+    // Jouw Firebase Config
     const firebaseConfig = {
         apiKey: "AIzaSyBXjLtvpTSu5F6cSEAj_MbDV_nHHJqvuN0",
         authDomain: "konijnenplanning.firebaseapp.com",
@@ -108,7 +106,7 @@
     function renderCalendar() {
         const container = document.getElementById('calendar-container');
         container.innerHTML = "";
-        let currentDate = new Date(2026, 2, 26);
+        let currentDate = new Date(2026, 2, 25); // VANDAAG toegevoegd voor de test!
         const endDate = new Date(2026, 3, 10);
         let dayCounter = 0;
 
@@ -119,22 +117,22 @@
             
             const isWaste = wasteSchedule[dateStr];
             const isSylviaDay = (d.getMonth() === 2 && d.getDate() === 26);
-            const showBreadAlert = (dayCounter % 4 === 0);
+            const showBreadAlert = (dayCounter % 4 === 1); // Aangepast zodat 26e brood heeft
 
             const card = document.createElement('div');
             card.className = 'day-card';
             card.innerHTML = `
                 <div class="date-header">${displayDate}</div>
-                ${isWaste ? `<div class="waste-tag"><i class="fas fa-trash"></i> ${isWaste} buiten!</div>` : ''}
-                ${showBreadAlert ? `<div class="bread-alert"><i class="fas fa-bread-slice"></i> 🥖 Nieuw brood uitleggen!</div>` : ''}
+                ${isWaste ? `<div class="waste-tag">${isWaste} buiten!</div>` : ''}
+                ${showBreadAlert ? `<div class="bread-alert">🥖 Nieuw brood uitleggen!</div>` : ''}
                 
                 <div class="task-group" id="group-${dateStr}-am">
                     <div class="late-text">⚠️ TE LAAT! Dieren moeten nog eten!</div>
                     <span class="group-title">☀️ Ochtend (voor 11:00)</span>
-                    <label class="task-item fish"><input type="checkbox" class="fish-check" id="${dateStr}-am-fish" onchange="updateFirebase('${dateStr}', 'am', 'fish', this.checked)"> 🐟 Vissen gevoerd</label>
+                    <label class="task-item fish"><input type="checkbox" id="${dateStr}-am-fish" onchange="updateFirebase('${dateStr}', 'am', 'fish', this.checked)"> 🐟 Vissen gevoerd</label>
                     <label class="task-item"><input type="checkbox" id="${dateStr}-am-rabbit" onchange="updateFirebase('${dateStr}', 'am', 'rabbit', this.checked)"> 🐰 Water, 1 witlof & brood</label>
                     <select id="${dateStr}-am-who" class="assignee-select" onchange="updateFirebase('${dateStr}', 'am', 'who', this.value)">
-                        <option value="">Wie voerde er?</option><option value="Bram">Bram</option><option value="Amber">Amber</option>${isSylviaDay ? '<option value="Sylvia">Sylvia</option>' : ''}
+                        <option value="">Wie?</option><option value="Bram">Bram</option><option value="Amber">Amber</option>${isSylviaDay ? '<option value="Sylvia">Sylvia</option>' : ''}
                     </select>
                 </div>
                 
@@ -143,7 +141,7 @@
                     <span class="group-title">🌙 Avond (voor 20:00)</span>
                     <label class="task-item"><input type="checkbox" id="${dateStr}-pm-rabbit" onchange="updateFirebase('${dateStr}', 'pm', 'rabbit', this.checked)"> 🐰 Check water & 1 witlof</label>
                     <select id="${dateStr}-pm-who" class="assignee-select" onchange="updateFirebase('${dateStr}', 'pm', 'who', this.value)">
-                        <option value="">Wie voerde er?</option><option value="Bram">Bram</option><option value="Amber">Amber</option>${isSylviaDay ? '<option value="Sylvia">Sylvia</option>' : ''}
+                        <option value="">Wie?</option><option value="Bram">Bram</option><option value="Amber">Amber</option>${isSylviaDay ? '<option value="Sylvia">Sylvia</option>' : ''}
                     </select>
                 </div>
             `;
@@ -152,44 +150,50 @@
             dayCounter++;
         }
 
-        // Live updates & Tijdcontrole
         db.ref('konijnen_status').on('value', (snapshot) => {
             const data = snapshot.val() || {};
-            const now = new Date();
-            const todayStr = now.getFullYear() + "-" + ("0"+(now.getMonth()+1)).slice(-2) + "-" + ("0"+now.getDate()).slice(-2);
-            const currentHour = now.getHours();
-
-            // Loop door alle kaarten om vinkjes en 'te laat' status bij te werken
-            document.querySelectorAll('.task-group').forEach(group => {
-                const idParts = group.id.split('-'); // group-YYYY-MM-DD-am
-                const date = idParts[1] + "-" + idParts[2] + "-" + idParts[3];
-                const timeOfDay = idParts[4];
-                
-                const taskData = (data[date] && data[date][timeOfDay]) ? data[date][timeOfDay] : {};
-                
-                // Vinkjes invullen
-                if(timeOfDay === 'am') {
-                    const f = document.getElementById(`${date}-am-fish`);
-                    if(f) f.checked = taskData.fish || false;
-                }
-                const r = document.getElementById(`${date}-${timeOfDay}-rabbit`);
-                if(r) r.checked = taskData.rabbit || false;
-                const w = document.getElementById(`${date}-${timeOfDay}-who`);
-                if(w) w.value = taskData.who || "";
-
-                // Controleer deadlines voor VANDAAG
-                if(date === todayStr) {
-                    const isDone = (timeOfDay === 'am') ? (taskData.fish && taskData.rabbit) : taskData.rabbit;
-                    const deadline = (timeOfDay === 'am') ? 11 : 20;
-                    
-                    if(!isDone && currentHour >= deadline) {
-                        group.classList.add('late-warning');
-                    } else {
-                        group.classList.remove('late-warning');
-                    }
-                }
-            });
+            checkStatus(data);
         });
+    }
+
+    function checkStatus(data) {
+        const now = new Date();
+        const todayStr = now.getFullYear() + "-" + ("0"+(now.getMonth()+1)).slice(-2) + "-" + ("0"+now.getDate()).slice(-2);
+        const currentHour = now.getHours();
+
+        document.querySelectorAll('.task-group').forEach(group => {
+            const idParts = group.id.split('-');
+            const date = idParts[1] + "-" + idParts[2] + "-" + idParts[3];
+            const timeOfDay = idParts[4];
+            const taskData = (data[date] && data[date][timeOfDay]) ? data[date][timeOfDay] : {};
+            
+            // Vinkjes laden
+            if(timeOfDay === 'am') {
+                const f = document.getElementById(`${date}-am-fish`);
+                if(f) f.checked = taskData.fish || false;
+            }
+            const r = document.getElementById(`${date}-${timeOfDay}-rabbit`);
+            if(r) r.checked = taskData.rabbit || false;
+            const w = document.getElementById(`${date}-${timeOfDay}-who`);
+            if(w) w.value = taskData.who || "";
+
+            // LOGICA VOOR RODE BALK
+            const isDone = (timeOfDay === 'am') ? (taskData.fish && taskData.rabbit) : taskData.rabbit;
+            const deadline = (timeOfDay === 'am') ? 11 : 20;
+            
+            // Als het vandaag is en de tijd is voorbij de deadline, of als testMode aan staat
+            if ((date === todayStr && currentHour >= deadline && !isDone) || (testMode && date === "2026-03-26" && !isDone)) {
+                group.classList.add('late-warning');
+            } else {
+                group.classList.remove('late-warning');
+            }
+        });
+    }
+
+    function runTest() {
+        testMode = true;
+        alert("Test geactiveerd! Kijk bij donderdag 26 maart. Omdat daar nog niets is afgevinkt, is het nu ROOD geworden ter waarschuwing.");
+        db.ref('konijnen_status').once('value', (snap) => checkStatus(snap.val() || {}));
     }
 
     function updateFirebase(date, time, field, value) {
