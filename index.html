@@ -10,7 +10,7 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     
     <style>
-        :root { --primary: #4CAF50; --secondary: #FF9800; --fish: #0288d1; --bg: #f0f2f0; --card: #ffffff; }
+        :root { --primary: #4CAF50; --secondary: #FF9800; --fish: #0288d1; --bread: #8d6e63; --bg: #f0f2f0; --card: #ffffff; }
         body { font-family: 'Segoe UI', sans-serif; background-color: var(--bg); margin: 0; padding: 15px; display: flex; flex-direction: column; align-items: center; }
         
         #login-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: var(--primary); z-index: 2000; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; }
@@ -24,7 +24,8 @@
         .day-card { background: var(--card); border-radius: 15px; padding: 15px; margin-bottom: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.08); border-left: 5px solid var(--primary); }
         .date-header { font-weight: bold; font-size: 1.1em; color: #333; margin-bottom: 10px; border-bottom: 1px solid #eee; padding-bottom: 5px; }
         
-        .waste-tag { background: #fff3e0; color: #e65100; padding: 5px 10px; border-radius: 6px; font-size: 0.8em; font-weight: bold; margin-bottom: 10px; display: inline-block; }
+        .waste-tag { background: #fff3e0; color: #e65100; padding: 5px 10px; border-radius: 6px; font-size: 0.8em; font-weight: bold; margin-bottom: 8px; display: block; }
+        .bread-alert { background: #e3f2fd; color: #0277bd; padding: 8px 10px; border-radius: 6px; font-size: 0.85em; font-weight: bold; margin-bottom: 10px; border: 1px solid #bbdefb; }
         
         .task-group { margin-top: 10px; padding: 12px; background: #f8faf8; border-radius: 10px; border: 1px solid #edf0ed; }
         .group-title { font-weight: bold; font-size: 0.9em; margin-bottom: 8px; display: block; color: #555; }
@@ -60,10 +61,10 @@
 
     <div class="info-box">
         <strong>⚠️ Instructies:</strong><br>
-        • Vissen: Alleen in de ochtend 1x voeren.<br>
-        • Konijnen Ochtend: Water verversen + 1 witlof.<br>
+        • Vissen: Alleen ochtend 1x voeren.<br>
+        • Konijnen Ochtend: Water + 1 witlof + harde boterham.<br>
         • Konijnen Avond: Check water + 1 witlof.<br>
-        • Check gezondheid konijnen (niet suf liggen!).
+        • 🥖 Om de 4 dagen vers brood uitleggen om te drogen!
     </div>
 
     <div id="calendar-container"></div>
@@ -111,6 +112,7 @@
         container.innerHTML = "";
         let currentDate = new Date(2026, 2, 26);
         const endDate = new Date(2026, 3, 10);
+        let dayCounter = 0;
 
         while (currentDate <= endDate) {
             const d = new Date(currentDate);
@@ -120,12 +122,16 @@
             const isWaste = wasteSchedule[dateStr];
             const isSylviaDay = (d.getMonth() === 2 && d.getDate() === 26);
             const sylviaOption = isSylviaDay ? '<option value="Sylvia">Sylvia</option>' : '';
+            
+            // Brood melding om de 4 dagen
+            const showBreadAlert = (dayCounter % 4 === 0);
 
             const card = document.createElement('div');
             card.className = 'day-card';
             card.innerHTML = `
                 <div class="date-header">${displayDate}</div>
                 ${isWaste ? `<div class="waste-tag"><i class="fas fa-trash"></i> ${isWaste} buiten!</div>` : ''}
+                ${showBreadAlert ? `<div class="bread-alert"><i class="fas fa-bread-slice"></i> 🥖 Nieuw brood uitleggen om te drogen!</div>` : ''}
                 
                 <div class="task-group">
                     <span class="group-title">☀️ Ochtend</span>
@@ -133,7 +139,7 @@
                         <input type="checkbox" class="fish-check" id="${dateStr}-am-fish" onchange="updateFirebase('${dateStr}', 'am', 'fish', this.checked)"> 🐟 Vissen gevoerd
                     </label>
                     <label class="task-item">
-                        <input type="checkbox" id="${dateStr}-am-rabbit" onchange="updateFirebase('${dateStr}', 'am', 'rabbit', this.checked)"> 🐰 Water & 1 witlof
+                        <input type="checkbox" id="${dateStr}-am-rabbit" onchange="updateFirebase('${dateStr}', 'am', 'rabbit', this.checked)"> 🐰 Water, 1 witlof & brood
                     </label>
                     <select id="${dateStr}-am-who" class="assignee-select" onchange="updateFirebase('${dateStr}', 'am', 'who', this.value)">
                         <option value="">Wie voerde er?</option>
@@ -158,6 +164,7 @@
             `;
             container.appendChild(card);
             currentDate.setDate(currentDate.getDate() + 1);
+            dayCounter++;
         }
 
         db.ref('konijnen_status').on('value', (snapshot) => {
