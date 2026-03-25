@@ -59,9 +59,11 @@
     </header>
 
     <div class="info-box">
-        <strong>⚠️ Herinnering:</strong><br>
-        Konijnen: Water, Witlof, Brood, Hooi. Vissen: 1x per dag voeren.<br>
-        Check gezondheid konijnen (niet suf liggen!).
+        <strong>⚠️ Instructies:</strong><br>
+        • Vissen: Alleen in de ochtend 1x voeren.<br>
+        • Konijnen Ochtend: Water verversen + 1 witlof.<br>
+        • Konijnen Avond: Check water + 1 witlof.<br>
+        • Check gezondheid konijnen (niet suf liggen!).
     </div>
 
     <div id="calendar-container"></div>
@@ -98,7 +100,6 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    // Gifafval is hier verwijderd
     const wasteSchedule = { 
         "2026-04-03": "📄 Karton", 
         "2026-04-04": "🟠 Plastic", 
@@ -132,7 +133,7 @@
                         <input type="checkbox" class="fish-check" id="${dateStr}-am-fish" onchange="updateFirebase('${dateStr}', 'am', 'fish', this.checked)"> 🐟 Vissen gevoerd
                     </label>
                     <label class="task-item">
-                        <input type="checkbox" id="${dateStr}-am-rabbit" onchange="updateFirebase('${dateStr}', 'am', 'rabbit', this.checked)"> 🐰 Konijnen eten/water
+                        <input type="checkbox" id="${dateStr}-am-rabbit" onchange="updateFirebase('${dateStr}', 'am', 'rabbit', this.checked)"> 🐰 Water & 1 witlof
                     </label>
                     <select id="${dateStr}-am-who" class="assignee-select" onchange="updateFirebase('${dateStr}', 'am', 'who', this.value)">
                         <option value="">Wie voerde er?</option>
@@ -144,11 +145,8 @@
                 
                 <div class="task-group">
                     <span class="group-title">🌙 Avond</span>
-                    <label class="task-item fish">
-                        <input type="checkbox" class="fish-check" id="${dateStr}-pm-fish" onchange="updateFirebase('${dateStr}', 'pm', 'fish', this.checked)"> 🐟 Vissen gevoerd
-                    </label>
                     <label class="task-item">
-                        <input type="checkbox" id="${dateStr}-pm-rabbit" onchange="updateFirebase('${dateStr}', 'pm', 'rabbit', this.checked)"> 🐰 Witlof check
+                        <input type="checkbox" id="${dateStr}-pm-rabbit" onchange="updateFirebase('${dateStr}', 'pm', 'rabbit', this.checked)"> 🐰 Check water & 1 witlof
                     </label>
                     <select id="${dateStr}-pm-who" class="assignee-select" onchange="updateFirebase('${dateStr}', 'pm', 'who', this.value)">
                         <option value="">Wie voerde er?</option>
