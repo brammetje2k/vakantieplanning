@@ -16,12 +16,11 @@
         /* Login & Blokkeer Scherm */
         #login-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: var(--primary); z-index: 2000; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; }
         .login-box { background: white; padding: 30px; border-radius: 20px; color: #333; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.2); width: 85%; max-width: 320px; }
-        #pin-input { width: 100%; padding: 15px; margin: 15px 0; border: 2px solid #ddd; border-radius: 10px; font-size: 1.2em; text-align: center; box-sizing: border-box; }
+        #pin-input { width: 100%; padding: 15px; margin: 15px 0; border: 2px solid #ddd; border-radius: 10px; font-size: 1.1em; text-align: center; box-sizing: border-box; }
         .login-btn { background: var(--primary); color: white; border: none; padding: 12px 30px; border-radius: 10px; font-weight: bold; cursor: pointer; width: 100%; font-size: 1em; }
 
-        /* Dashboard (standaard verborgen) */
+        /* Dashboard */
         #main-content { display: none; width: 100%; max-width: 450px; padding-bottom: 110px; }
-        
         .info-box { background: #fff8e1; padding: 15px; border-radius: 12px; font-size: 0.85em; margin-bottom: 20px; border-left: 5px solid var(--secondary); }
         .day-card { background: var(--card); border-radius: 15px; padding: 15px; margin-bottom: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.08); border-left: 5px solid var(--primary); }
         .date-header { font-weight: bold; font-size: 1.1em; margin-bottom: 8px; color: #333; }
@@ -40,14 +39,14 @@
     <div class="login-box" id="login-container">
         <h3 id="login-title">Beveiligde Toegang</h3>
         <div id="login-form">
-            <p>Voer de familie-code in:</p>
-            <input type="tel" id="pin-input" placeholder="****">
+            <p>Voer het wachtwoord in:</p>
+            <input type="text" id="pin-input" placeholder="Wachtwoord...">
             <button class="login-btn" onclick="checkPin()">Open Planner</button>
             <p id="error-msg" style="color:red; display:none; font-size: 0.8em; margin-top:10px;">Onjuiste code!</p>
         </div>
         <div id="expired-msg" style="display:none;">
             <p style="font-size: 1.2em;">🔒 <b>Toegang Verlopen</b></p>
-            <p>Deze planner was geldig tot 11 april 2026. De toegang is nu gesloten.</p>
+            <p>Deze planner was geldig tot 11 april 2026.</p>
         </div>
     </div>
 </div>
@@ -73,8 +72,7 @@
 </div>
 
 <script>
-    // AUTOMATISCHE BLOKKERING OP DATUM
-    const blockDate = new Date(2026, 3, 11); // 11 April 2026 (Maand is 0-indexed, dus 3 = April)
+    const blockDate = new Date(2026, 3, 11); 
     
     window.onload = function() {
         if (new Date() >= blockDate) {
@@ -85,7 +83,7 @@
     };
 
     function checkPin() {
-        const pin = document.getElementById('pin-input').value;
+        const pin = document.getElementById('pin-input').value.toLowerCase().trim();
         if(pin === "borrelplank") {
             document.getElementById('login-overlay').style.display = 'none';
             document.getElementById('main-content').style.display = 'block';
