@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Huis & Konijnen Sitter Dashboard</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4CAF50;
+            --secondary: #FF9800;
+            --whatsapp: #25D366;
+            --bg: #f4f7f6;
+            --card: #ffffff;
+            --text: #333;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 20px;
+            padding-bottom: 100px; /* Ruimte voor de knoppen onderaan */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+            width: 100%;
+        }
+
+        header h1 {
+            margin: 0;
+            color: var(--primary);
+        }
+
+        /* De nieuwe plek voor de knoppen: Onderaan het scherm */
+        .footer-contact-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: white;
+            display: flex;
+            justify-content: space-around;
+            padding: 15px 0;
+            box-shadow: 0 -4px 10px rgba(0,0,0,0.1);
+            z-index: 1000;
+        }
+
+        .contact-button {
+            background-color: var(--whatsapp);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 0.9em;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        .container {
+            width: 100%;
+            max-width: 500px;
+        }
+
+        .rabbit-info {
+            background: #fff8e1;
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 0.9em;
+            margin-bottom: 20px;
+            border-left: 5px solid var(--secondary);
+        }
+
+        .day-card {
+            background: var(--card);
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            border-left: 5px solid var(--primary);
+        }
+
+        .day-card.waste-day {
+            border-left-color: var(--secondary);
+        }
+
+        .date-header {
+            font-weight: bold;
+            font-size: 1.1em;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .task-group {
+            margin-top: 10px;
+            padding: 10px;
+            background: #f9f9f9;
+            border-radius: 8px;
+        }
+
+        .task-item {
+            display: flex;
+            align-items: center;
+            margin: 8px 0;
+            cursor: pointer;
+            font-size: 0.95em;
+        }
+
+        input[type="checkbox"] {
+            width: 22px;
+            height: 22px;
+            margin-right: 12px;
+            accent-color: var(--primary);
+        }
+
+        .assignee-select {
+            width: 100%;
+            padding: 10px;
+            margin-top: 8px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 0.9em;
+            background-color: white;
+            color: #555;
+        }
+
+        .waste-tag {
+            background: #fff3e0;
+            color: #e65100;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 0.85em;
+            font-weight: bold;
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>🐰 Sylvia's Planner</h1>
+    <p>Maart - April 2026</p>
+</header>
+
+<div class="container">
+    <div class="rabbit-info">
+        <strong>📌 Belangrijke instructies:</strong><br>
+        • Check gezondheid (niet suf/ziek).<br>
+        • Let op bij deurtjes: niet laten ontsnappen!<br>
+        • Vogel in de kooi? Vangen met handdoek/net.
+    </div>
+
+    <div id="calendar-container"></div>
+</div>
+
+<div class="footer-contact-bar">
+    <a href="https://wa.me/31612345678?text=Hoi%20Bram,%20vraagje%20over%20de%20konijnen..." class="contact-button">
+        <i class="fab fa-whatsapp"></i> App Bram
+    </a>
+    <a href="https://wa.me/31687654321?text=Hoi%20Amber,%20vraagje%20over%20de%20konijnen..." class="contact-button">
+        <i class="fab fa-whatsapp"></i> App Amber
+    </a>
+</div>
+
+<script>
+    const wasteSchedule = {
+        "2026-03-27": "🚛 GRIP wagen",
+        "2026-04-03": "🌿 GFT + 📄 Papier",
+        "2026-04-04": "🟠 Plastic/Metaal",
+        "2026-04-10": "🗑️ Restafval"
+    };
+
+    const startDate = new Date(2026, 2, 26);
+    const endDate = new Date(2026, 3, 10);
+
+    function renderCalendar() {
+        const container = document.getElementById('calendar-container');
+        let currentDate = new Date(startDate);
+
+        while (currentDate <= endDate) {
+            const dateStr = currentDate.toISOString().split('T')[0];
+            const displayDate = currentDate.toLocaleDateString('nl-NL', { weekday: 'long', day: 'numeric', month: 'long' });
+            const isWaste = wasteSchedule[dateStr];
+
+            const card = document.createElement('div');
+            card.className = `day-card ${isWaste ? 'waste-day' : ''}`;
+            
+            let html = `
+                <div class="date-header">
+                    <span>${displayDate}</span>
+                </div>
+                ${isWaste ? `<div class="waste-tag">${isWaste} buiten!</div>` : ''}
+                
+                <div class="task-group">
+                    <strong>☀️ Ochtend</strong>
+                    <label class="task-item">
+                        <input type="checkbox" id="${dateStr}-am-check" onchange="saveCheckState('${dateStr}-am-check')">
+                        Water, Witlof/Andijvie, Brood, Hooi
+                    </label>
+                    <select id="${dateStr}-am-assignee" class="assignee-select" onchange="saveAssignment('${dateStr}-am-assignee', this.value)">
+                        <option value="">Wie voert er? 👇</option>
+                        <option value="Bram">Bram</option>
+                        <option value="Amber">Amber</option>
+                    </select>
+                </div>
+                
+                <div class="task-group">
+                    <strong>🌙 Avond</strong>
+                    <label class="task-item">
+                        <input type="checkbox" id="${dateStr}-pm-check" onchange="saveCheckState('${dateStr}-pm-check')">
+                        Witlof & Water check
+                    </label>
+                    <select id="${dateStr}-pm-assignee" class="assignee-select" onchange="saveAssignment('${dateStr}-pm-assignee', this.value)">
+                        <option value="">Wie voert er? 👇</option>
+                        <option value="Bram">Bram</option>
+                        <option value="Amber">Amber</option>
+                    </select>
+                </div>
+            `;
+            
+            card.innerHTML = html;
+            container.appendChild(card);
+            
+            // Laad opgeslagen vinkjes
+            if (localStorage.getItem(`${dateStr}-am-check`) === 'true') document.getElementById(`${dateStr}-am-check`).checked = true;
+            if (localStorage.getItem(`${dateStr}-pm-check`) === 'true') document.getElementById(`${dateStr}-pm-check`).checked = true;
+
+            // Laad opgeslagen toewijzingen
+            const savedAmAssignee = localStorage.getItem(`${dateStr}-am-assignee`);
+            if (savedAmAssignee) document.getElementById(`${dateStr}-am-assignee`).value = savedAmAssignee;
+            const savedPmAssignee = localStorage.getItem(`${dateStr}-pm-assignee`);
+            if (savedPmAssignee) document.getElementById(`${dateStr}-pm-assignee`).value = savedPmAssignee;
+
+            currentDate.setDate(currentDate.getDate() + 1);
+        }
+    }
+
+    function saveCheckState(id) {
+        localStorage.setItem(id, document.getElementById(id).checked);
+    }
+
+    function saveAssignment(id, value) {
+        localStorage.setItem(id, value);
+    }
+
+    renderCalendar();
+</script>
+
+</body>
+</html>
