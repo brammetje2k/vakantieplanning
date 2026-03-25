@@ -3,68 +3,68 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🐰 Familie & Konijnen Planner</title>
+    <title>🐰 Familie Planner - Live</title>
     
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     
     <style>
-        :root { --primary: #4CAF50; --secondary: #FF9800; --bg: #f0f2f0; --card: #ffffff; }
+        :root { --primary: #4CAF50; --secondary: #FF9800; --fish: #0288d1; --bg: #f0f2f0; --card: #ffffff; }
         body { font-family: 'Segoe UI', sans-serif; background-color: var(--bg); margin: 0; padding: 15px; display: flex; flex-direction: column; align-items: center; }
         
         #login-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: var(--primary); z-index: 2000; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; }
         .login-box { background: white; padding: 30px; border-radius: 20px; color: #333; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.2); width: 85%; max-width: 320px; }
-        
-        #wachtwoord-veld { 
-            width: 100%; padding: 15px; margin: 15px 0; border: 2px solid #ddd; border-radius: 10px; 
-            font-size: 1.1em; text-align: center; box-sizing: border-box;
-        }
-        
+        #wachtwoord-veld { width: 100%; padding: 15px; margin: 15px 0; border: 2px solid #ddd; border-radius: 10px; font-size: 1.1em; text-align: center; box-sizing: border-box; }
         .login-btn { background: var(--primary); color: white; border: none; padding: 12px 30px; border-radius: 10px; font-weight: bold; cursor: pointer; width: 100%; }
 
         #main-content { display: none; width: 100%; max-width: 450px; padding-bottom: 120px; }
-        .info-box { background: #fff8e1; padding: 15px; border-radius: 12px; font-size: 0.85em; margin-bottom: 20px; border-left: 5px solid var(--secondary); }
+        .info-box { background: #fff8e1; padding: 12px; border-radius: 12px; font-size: 0.8em; margin-bottom: 15px; border-left: 5px solid var(--secondary); }
+        
         .day-card { background: var(--card); border-radius: 15px; padding: 15px; margin-bottom: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.08); border-left: 5px solid var(--primary); }
+        .date-header { font-weight: bold; font-size: 1.1em; color: #333; margin-bottom: 10px; border-bottom: 1px solid #eee; padding-bottom: 5px; }
         
-        .date-header { font-weight: bold; font-size: 1.1em; color: #333; margin-bottom: 2px; }
-        .fish-reminder { color: #0288d1; font-size: 0.85em; font-weight: bold; margin-bottom: 10px; display: flex; align-items: center; gap: 5px; }
+        .waste-tag { background: #fff3e0; color: #e65100; padding: 5px 10px; border-radius: 6px; font-size: 0.8em; font-weight: bold; margin-bottom: 10px; display: inline-block; }
         
-        .waste-tag { background: #fff3e0; color: #e65100; padding: 5px 10px; border-radius: 6px; font-size: 0.8em; font-weight: bold; margin-bottom: 12px; display: inline-block; }
-        .task-group { margin-top: 8px; padding: 12px; background: #f8faf8; border-radius: 10px; border: 1px solid #edf0ed; }
-        .task-item { display: flex; align-items: center; margin: 5px 0; font-size: 0.95em; }
-        input[type="checkbox"] { width: 26px; height: 26px; margin-right: 12px; accent-color: var(--primary); }
-        .assignee-select { width: 100%; padding: 10px; margin-top: 8px; border: 1px solid #ccc; border-radius: 8px; background: white; }
+        .task-group { margin-top: 10px; padding: 12px; background: #f8faf8; border-radius: 10px; border: 1px solid #edf0ed; }
+        .group-title { font-weight: bold; font-size: 0.9em; margin-bottom: 8px; display: block; color: #555; }
+        
+        .task-item { display: flex; align-items: center; margin: 8px 0; font-size: 0.9em; cursor: pointer; }
+        .task-item.fish { color: var(--fish); font-weight: 600; }
+        
+        input[type="checkbox"] { width: 22px; height: 22px; margin-right: 12px; accent-color: var(--primary); cursor: pointer; }
+        input[type="checkbox"].fish-check { accent-color: var(--fish); }
+
+        .assignee-select { width: 100%; padding: 10px; margin-top: 8px; border: 1px solid #ccc; border-radius: 8px; background: white; font-size: 0.85em; }
         
         .footer-contact-bar { position: fixed; bottom: 0; left: 0; width: 100%; background: white; display: flex; justify-content: space-around; padding: 12px 5px; box-shadow: 0 -4px 15px rgba(0,0,0,0.1); z-index: 1000; }
-        .contact-button { background-color: #333; color: white; padding: 10px 12px; border-radius: 20px; text-decoration: none; font-weight: bold; font-size: 0.75em; display: flex; align-items: center; gap: 5px; }
+        .contact-button { background-color: #333; color: white; padding: 10px 8px; border-radius: 15px; text-decoration: none; font-weight: bold; font-size: 0.7em; display: flex; align-items: center; gap: 4px; flex: 1; margin: 0 4px; justify-content: center; }
     </style>
 </head>
 <body>
 
 <div id="login-overlay">
     <div class="login-box">
-        <h3>Beveiligde Toegang</h3>
-        <div id="login-form">
-            <p>Voer het wachtwoord in:</p>
-            <input type="text" id="wachtwoord-veld" placeholder="Typ wachtwoord..." autocomplete="off">
-            <button class="login-btn" onclick="checkPin()">Open Planner</button>
-            <p id="error-msg" style="color:red; display:none; font-size: 0.8em; margin-top:10px;">Onjuiste code!</p>
-        </div>
-        <div id="expired-msg" style="display:none;">
-            <p style="font-size: 1.2em;">🔒 <b>Toegang Verlopen</b></p>
-            <p>Deze planner was geldig tot 11 april 2026.</p>
-        </div>
+        <h3>Toegang</h3>
+        <input type="text" id="wachtwoord-veld" placeholder="Wachtwoord..." autocomplete="off">
+        <button class="login-btn" onclick="checkPin()">Open Planner</button>
+        <p id="error-msg" style="color:red; display:none; font-size: 0.8em; margin-top:10px;">Onjuiste code!</p>
     </div>
 </div>
 
 <div id="main-content">
-    <header style="text-align:center; margin-bottom:20px;">
-        <h1>🐰 Konijnen & Vissen</h1>
-        <div style="font-size: 0.7em; color: var(--primary);">● LIVE VERBONDEN</div>
+    <header style="text-align:center; margin-bottom:15px;">
+        <h1 style="margin:0;">🐰 Konijnen & Vissen</h1>
+        <div style="font-size: 0.7em; color: var(--primary); font-weight: bold;">● LIVE VERBONDEN</div>
     </header>
 
-    <div class="container" id="calendar-container"></div>
+    <div class="info-box">
+        <strong>⚠️ Herinnering:</strong><br>
+        Konijnen: Water, Witlof, Brood, Hooi. Vissen: 1x per dag voeren.<br>
+        Check gezondheid konijnen (niet suf liggen!).
+    </div>
+
+    <div id="calendar-container"></div>
 
     <div class="footer-contact-bar">
         <a href="https://wa.me/31623568453" class="contact-button"><i class="fab fa-whatsapp"></i> Bram</a>
@@ -74,19 +74,8 @@
 </div>
 
 <script>
-    const blockDate = new Date(2026, 3, 11); 
-    
-    window.onload = function() {
-        if (new Date() >= blockDate) {
-            document.getElementById('login-form').style.display = 'none';
-            document.getElementById('expired-msg').style.display = 'block';
-        }
-    };
-
     function checkPin() {
-        const pin = document.getElementById('wachtwoord-veld').value.trim();
-        // Wachtwoord is nu Borrelplank (met hoofdletter)
-        if(pin === "Borrelplank") {
+        if(document.getElementById('wachtwoord-veld').value.trim() === "Borrelplank") {
             document.getElementById('login-overlay').style.display = 'none';
             document.getElementById('main-content').style.display = 'block';
             renderCalendar();
@@ -116,34 +105,35 @@
         "2026-04-10": "🗑️ Restafval" 
     };
 
-    const startDate = new Date(2026, 2, 26);
-    const endDate = new Date(2026, 3, 10);
-
     function renderCalendar() {
         const container = document.getElementById('calendar-container');
         container.innerHTML = "";
-        let currentDate = new Date(startDate);
+        let currentDate = new Date(2026, 2, 26); // Start 26 maart
+        const endDate = new Date(2026, 3, 10); // Tot 10 april
 
         while (currentDate <= endDate) {
-            const dateStr = currentDate.toISOString().split('T')[0];
-            const displayDate = currentDate.toLocaleDateString('nl-NL', { weekday: 'long', day: 'numeric', month: 'long' });
-            const isWaste = wasteSchedule[dateStr];
+            const d = new Date(currentDate);
+            const dateStr = d.getFullYear() + "-" + ("0"+(d.getMonth()+1)).slice(-2) + "-" + ("0"+d.getDate()).slice(-2);
+            const displayDate = d.toLocaleDateString('nl-NL', { weekday: 'long', day: 'numeric', month: 'long' });
             
-            // Check of het donderdag 26 maart is voor Sylvia optie
-            const isMarch26 = dateStr === "2026-03-26";
-            const sylviaOption = isMarch26 ? '<option value="Sylvia">Sylvia</option>' : '';
+            const isWaste = wasteSchedule[dateStr];
+            // Sylvia alleen op donderdag 26 maart (Maand 2 = Maart, Datum 26)
+            const isSylviaDay = (d.getMonth() === 2 && d.getDate() === 26);
+            const sylviaOption = isSylviaDay ? '<option value="Sylvia">Sylvia</option>' : '';
 
             const card = document.createElement('div');
             card.className = 'day-card';
             card.innerHTML = `
                 <div class="date-header">${displayDate}</div>
-                <div class="fish-reminder"><i class="fas fa-fish"></i> Vissen gevoerd vandaag?</div>
                 ${isWaste ? `<div class="waste-tag"><i class="fas fa-trash"></i> ${isWaste} buiten!</div>` : ''}
                 
                 <div class="task-group">
-                    <strong>☀️ Ochtend</strong>
+                    <span class="group-title">☀️ Ochtend</span>
+                    <label class="task-item fish">
+                        <input type="checkbox" class="fish-check" id="${dateStr}-am-fish" onchange="updateFirebase('${dateStr}', 'am', 'fish', this.checked)"> 🐟 Vissen gevoerd
+                    </label>
                     <label class="task-item">
-                        <input type="checkbox" id="${dateStr}-am-check" onchange="updateFirebase('${dateStr}', 'am', 'check', this.checked)"> Eten & Water ✅
+                        <input type="checkbox" id="${dateStr}-am-rabbit" onchange="updateFirebase('${dateStr}', 'am', 'rabbit', this.checked)"> 🐰 Konijnen eten/water
                     </label>
                     <select id="${dateStr}-am-who" class="assignee-select" onchange="updateFirebase('${dateStr}', 'am', 'who', this.value)">
                         <option value="">Wie voerde er?</option>
@@ -154,9 +144,12 @@
                 </div>
                 
                 <div class="task-group">
-                    <strong>🌙 Avond</strong>
+                    <span class="group-title">🌙 Avond</span>
+                    <label class="task-item fish">
+                        <input type="checkbox" class="fish-check" id="${dateStr}-pm-fish" onchange="updateFirebase('${dateStr}', 'pm', 'fish', this.checked)"> 🐟 Vissen gevoerd
+                    </label>
                     <label class="task-item">
-                        <input type="checkbox" id="${dateStr}-pm-check" onchange="updateFirebase('${dateStr}', 'pm', 'check', this.checked)"> Witlof check ✅
+                        <input type="checkbox" id="${dateStr}-pm-rabbit" onchange="updateFirebase('${dateStr}', 'pm', 'rabbit', this.checked)"> 🐰 Witlof check
                     </label>
                     <select id="${dateStr}-pm-who" class="assignee-select" onchange="updateFirebase('${dateStr}', 'pm', 'who', this.value)">
                         <option value="">Wie voerde er?</option>
@@ -174,18 +167,16 @@
             const data = snapshot.val();
             if (data) {
                 for (let date in data) {
-                    if (data[date].am) {
-                        const amCheck = document.getElementById(`${date}-am-check`);
-                        const amWho = document.getElementById(`${date}-am-who`);
-                        if(amCheck) amCheck.checked = data[date].am.check || false;
-                        if(amWho) amWho.value = data[date].am.who || "";
-                    }
-                    if (data[date].pm) {
-                        const pmCheck = document.getElementById(`${date}-pm-check`);
-                        const pmWho = document.getElementById(`${date}-pm-who`);
-                        if(pmCheck) pmCheck.checked = data[date].pm.check || false;
-                        if(pmWho) pmWho.value = data[date].pm.who || "";
-                    }
+                    ['am', 'pm'].forEach(time => {
+                        if (data[date][time]) {
+                            const f = document.getElementById(`${date}-${time}-fish`);
+                            const r = document.getElementById(`${date}-${time}-rabbit`);
+                            const w = document.getElementById(`${date}-${time}-who`);
+                            if(f) f.checked = data[date][time].fish || false;
+                            if(r) r.checked = data[date][time].rabbit || false;
+                            if(w) w.value = data[date][time].who || "";
+                        }
+                    });
                 }
             }
         });
