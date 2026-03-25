@@ -98,8 +98,8 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
+    // Gifafval is hier verwijderd
     const wasteSchedule = { 
-        "2026-03-27": "⚠️ GIF afval", 
         "2026-04-03": "📄 Karton", 
         "2026-04-04": "🟠 Plastic", 
         "2026-04-10": "🗑️ Restafval" 
@@ -108,8 +108,8 @@
     function renderCalendar() {
         const container = document.getElementById('calendar-container');
         container.innerHTML = "";
-        let currentDate = new Date(2026, 2, 26); // Start 26 maart
-        const endDate = new Date(2026, 3, 10); // Tot 10 april
+        let currentDate = new Date(2026, 2, 26);
+        const endDate = new Date(2026, 3, 10);
 
         while (currentDate <= endDate) {
             const d = new Date(currentDate);
@@ -117,7 +117,6 @@
             const displayDate = d.toLocaleDateString('nl-NL', { weekday: 'long', day: 'numeric', month: 'long' });
             
             const isWaste = wasteSchedule[dateStr];
-            // Sylvia alleen op donderdag 26 maart (Maand 2 = Maart, Datum 26)
             const isSylviaDay = (d.getMonth() === 2 && d.getDate() === 26);
             const sylviaOption = isSylviaDay ? '<option value="Sylvia">Sylvia</option>' : '';
 
