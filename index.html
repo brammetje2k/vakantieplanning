@@ -3,183 +3,182 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Huis & Konijnen Sitter Dashboard</title>
+    <title>🐰 Konijnen LIVE Planner</title>
+    
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        :root {
-            --primary: #4CAF50;
-            --secondary: #FF9800;
-            --whatsapp: #25D366;
-            --bg: #f4f7f6;
-            --card: #ffffff;
-            --text: #333;
+        :root { 
+            --primary: #4CAF50; 
+            --secondary: #FF9800; 
+            --whatsapp: #25D366; 
+            --bg: #f0f2f0; 
+            --card: #ffffff; 
+        }
+        
+        body { 
+            font-family: 'Segoe UI', Tahoma, sans-serif; 
+            background-color: var(--bg); 
+            margin: 0; 
+            padding: 15px; 
+            padding-bottom: 110px; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
         }
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg);
-            color: var(--text);
-            margin: 0;
-            padding: 20px;
-            padding-bottom: 100px; /* Ruimte voor de knoppen onderaan */
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
+        .container { width: 100%; max-width: 450px; }
 
-        header {
-            text-align: center;
-            margin-bottom: 20px;
-            width: 100%;
-        }
+        header { text-align: center; margin-bottom: 20px; }
+        .sync-indicator { font-size: 0.75em; color: var(--primary); font-weight: bold; margin-bottom: 10px; }
 
-        header h1 {
-            margin: 0;
-            color: var(--primary);
-        }
-
-        /* De nieuwe plek voor de knoppen: Onderaan het scherm */
-        .footer-contact-bar {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            background: white;
-            display: flex;
-            justify-content: space-around;
-            padding: 15px 0;
-            box-shadow: 0 -4px 10px rgba(0,0,0,0.1);
-            z-index: 1000;
-        }
-
-        .contact-button {
-            background-color: var(--whatsapp);
-            color: white;
-            padding: 12px 20px;
-            border-radius: 30px;
-            text-decoration: none;
-            font-weight: bold;
-            font-size: 0.9em;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-        }
-
-        .container {
-            width: 100%;
-            max-width: 500px;
-        }
-
-        .rabbit-info {
+        .info-box {
             background: #fff8e1;
             padding: 15px;
-            border-radius: 10px;
-            font-size: 0.9em;
+            border-radius: 12px;
+            font-size: 0.85em;
             margin-bottom: 20px;
             border-left: 5px solid var(--secondary);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
         }
 
-        .day-card {
-            background: var(--card);
-            border-radius: 15px;
-            padding: 15px;
-            margin-bottom: 15px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        .day-card { 
+            background: var(--card); 
+            border-radius: 15px; 
+            padding: 15px; 
+            margin-bottom: 15px; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.08); 
             border-left: 5px solid var(--primary);
         }
 
-        .day-card.waste-day {
-            border-left-color: var(--secondary);
-        }
-
-        .date-header {
-            font-weight: bold;
-            font-size: 1.1em;
-            margin-bottom: 10px;
+        .date-header { 
+            font-weight: bold; 
+            font-size: 1.1em; 
+            margin-bottom: 8px; 
+            color: #333; 
             display: flex;
             justify-content: space-between;
         }
 
-        .task-group {
-            margin-top: 10px;
-            padding: 10px;
-            background: #f9f9f9;
-            border-radius: 8px;
+        .waste-tag { 
+            background: #fff3e0; 
+            color: #e65100; 
+            padding: 5px 10px; 
+            border-radius: 6px; 
+            font-size: 0.8em; 
+            font-weight: bold; 
+            margin-bottom: 12px; 
+            display: inline-block;
         }
 
-        .task-item {
-            display: flex;
-            align-items: center;
-            margin: 8px 0;
+        .task-group { 
+            margin-top: 8px; 
+            padding: 12px; 
+            background: #f8faf8; 
+            border-radius: 10px; 
+            border: 1px solid #edf0ed;
+        }
+
+        .task-item { 
+            display: flex; 
+            align-items: center; 
+            margin: 5px 0; 
+            font-size: 0.9em;
             cursor: pointer;
-            font-size: 0.95em;
         }
 
-        input[type="checkbox"] {
-            width: 22px;
-            height: 22px;
-            margin-right: 12px;
+        input[type="checkbox"] { 
+            width: 24px; 
+            height: 24px; 
+            margin-right: 12px; 
+            cursor: pointer;
             accent-color: var(--primary);
         }
 
-        .assignee-select {
-            width: 100%;
-            padding: 10px;
-            margin-top: 8px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
+        .assignee-select { 
+            width: 100%; 
+            padding: 10px; 
+            margin-top: 8px; 
+            border: 1px solid #ccc; 
+            border-radius: 8px; 
+            background: white;
             font-size: 0.9em;
-            background-color: white;
-            color: #555;
         }
 
-        .waste-tag {
-            background: #fff3e0;
-            color: #e65100;
-            padding: 5px 10px;
-            border-radius: 5px;
-            font-size: 0.85em;
-            font-weight: bold;
-            display: inline-block;
-            margin-bottom: 10px;
+        .footer-contact-bar { 
+            position: fixed; 
+            bottom: 0; 
+            left: 0; 
+            width: 100%; 
+            background: rgba(255,255,255,0.95); 
+            display: flex; 
+            justify-content: space-around; 
+            padding: 15px 0; 
+            box-shadow: 0 -4px 15px rgba(0,0,0,0.1); 
+            z-index: 1000;
+            backdrop-filter: blur(5px);
         }
 
+        .contact-button { 
+            background-color: #333; 
+            color: white; 
+            padding: 12px 20px; 
+            border-radius: 30px; 
+            text-decoration: none; 
+            font-weight: bold; 
+            font-size: 0.85em; 
+            display: flex; 
+            align-items: center; 
+            gap: 8px; 
+        }
     </style>
 </head>
 <body>
 
 <header>
-    <h1>🐰 Sylvia's Planner</h1>
-    <p>Maart - April 2026</p>
+    <h1>🐰 Konijnen Planner</h1>
+    <div class="sync-indicator" id="status">● LIVE VERBONDEN</div>
 </header>
 
 <div class="container">
-    <div class="rabbit-info">
-        <strong>📌 Belangrijke instructies:</strong><br>
-        • Check gezondheid (niet suf/ziek).<br>
-        • Let op bij deurtjes: niet laten ontsnappen!<br>
-        • Vogel in de kooi? Vangen met handdoek/net.
+    <div class="info-box">
+        <strong>⚠️ Instructies:</strong><br>
+        • Ochtend: Water, Witlof/Andijvie, Brood (geen schimmel!), Hooi.<br>
+        • Avond: Witlof & Water check.<br>
+        • Check gezondheid: Niet suf/half dood liggen?
     </div>
 
     <div id="calendar-container"></div>
 </div>
 
 <div class="footer-contact-bar">
-    <a href="https://wa.me/31612345678?text=Hoi%20Bram,%20vraagje%20over%20de%20konijnen..." class="contact-button">
-        <i class="fab fa-whatsapp"></i> App Bram
-    </a>
-    <a href="https://wa.me/31687654321?text=Hoi%20Amber,%20vraagje%20over%20de%20konijnen..." class="contact-button">
-        <i class="fab fa-whatsapp"></i> App Amber
-    </a>
+    <a href="https://wa.me/31623568453" class="contact-button"><i class="fab fa-whatsapp"></i> Bram</a>
+    <a href="https://wa.me/31620915222" class="contact-button"><i class="fab fa-whatsapp"></i> Amber</a>
 </div>
 
 <script>
-    const wasteSchedule = {
-        "2026-03-27": "🚛 GRIP wagen",
-        "2026-04-03": "🌿 GFT + 📄 Papier",
-        "2026-04-04": "🟠 Plastic/Metaal",
-        "2026-04-10": "🗑️ Restafval"
+    // Jouw Firebase Configuratie
+    const firebaseConfig = {
+        apiKey: "AIzaSyBXjLtvpTSu5F6cSEAj_MbDV_nHHJqvuN0",
+        authDomain: "konijnenplanning.firebaseapp.com",
+        projectId: "konijnenplanning",
+        storageBucket: "konijnenplanning.firebasestorage.app",
+        messagingSenderId: "427455485997",
+        appId: "1:427455485997:web:cec09769cf4df42e8e40a4",
+        measurementId: "G-BXZJ9F5R4F",
+        databaseURL: "https://konijnenplanning-default-rtdb.europe-west1.firebasedatabase.app"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    const wasteSchedule = { 
+        "2026-03-27": "🚛 GRIP wagen", 
+        "2026-04-03": "🌿 GFT + 📄 Papier", 
+        "2026-04-04": "🟠 Plastic/Metaal", 
+        "2026-04-10": "🗑️ Restafval" 
     };
 
     const startDate = new Date(2026, 2, 26);
@@ -195,22 +194,18 @@
             const isWaste = wasteSchedule[dateStr];
 
             const card = document.createElement('div');
-            card.className = `day-card ${isWaste ? 'waste-day' : ''}`;
-            
-            let html = `
-                <div class="date-header">
-                    <span>${displayDate}</span>
-                </div>
-                ${isWaste ? `<div class="waste-tag">${isWaste} buiten!</div>` : ''}
+            card.className = 'day-card';
+            card.innerHTML = `
+                <div class="date-header">${displayDate}</div>
+                ${isWaste ? `<div class="waste-tag">${isWaste}</div>` : ''}
                 
                 <div class="task-group">
                     <strong>☀️ Ochtend</strong>
                     <label class="task-item">
-                        <input type="checkbox" id="${dateStr}-am-check" onchange="saveCheckState('${dateStr}-am-check')">
-                        Water, Witlof/Andijvie, Brood, Hooi
+                        <input type="checkbox" id="${dateStr}-am-check" onchange="updateFirebase('${dateStr}', 'am', 'check', this.checked)"> Eten & Water gegeven
                     </label>
-                    <select id="${dateStr}-am-assignee" class="assignee-select" onchange="saveAssignment('${dateStr}-am-assignee', this.value)">
-                        <option value="">Wie voert er? 👇</option>
+                    <select id="${dateStr}-am-who" class="assignee-select" onchange="updateFirebase('${dateStr}', 'am', 'who', this.value)">
+                        <option value="">Wie voerde er?</option>
                         <option value="Bram">Bram</option>
                         <option value="Amber">Amber</option>
                     </select>
@@ -219,40 +214,43 @@
                 <div class="task-group">
                     <strong>🌙 Avond</strong>
                     <label class="task-item">
-                        <input type="checkbox" id="${dateStr}-pm-check" onchange="saveCheckState('${dateStr}-pm-check')">
-                        Witlof & Water check
+                        <input type="checkbox" id="${dateStr}-pm-check" onchange="updateFirebase('${dateStr}', 'pm', 'check', this.checked)"> Witlof & Water check
                     </label>
-                    <select id="${dateStr}-pm-assignee" class="assignee-select" onchange="saveAssignment('${dateStr}-pm-assignee', this.value)">
-                        <option value="">Wie voert er? 👇</option>
+                    <select id="${dateStr}-pm-who" class="assignee-select" onchange="updateFirebase('${dateStr}', 'pm', 'who', this.value)">
+                        <option value="">Wie voerde er?</option>
                         <option value="Bram">Bram</option>
                         <option value="Amber">Amber</option>
                     </select>
                 </div>
             `;
-            
-            card.innerHTML = html;
             container.appendChild(card);
-            
-            // Laad opgeslagen vinkjes
-            if (localStorage.getItem(`${dateStr}-am-check`) === 'true') document.getElementById(`${dateStr}-am-check`).checked = true;
-            if (localStorage.getItem(`${dateStr}-pm-check`) === 'true') document.getElementById(`${dateStr}-pm-check`).checked = true;
-
-            // Laad opgeslagen toewijzingen
-            const savedAmAssignee = localStorage.getItem(`${dateStr}-am-assignee`);
-            if (savedAmAssignee) document.getElementById(`${dateStr}-am-assignee`).value = savedAmAssignee;
-            const savedPmAssignee = localStorage.getItem(`${dateStr}-pm-assignee`);
-            if (savedPmAssignee) document.getElementById(`${dateStr}-pm-assignee`).value = savedPmAssignee;
-
             currentDate.setDate(currentDate.getDate() + 1);
         }
+
+        // Luister naar live updates
+        db.ref('konijnen_status').on('value', (snapshot) => {
+            const data = snapshot.val();
+            if (data) {
+                for (let date in data) {
+                    if (data[date].am) {
+                        const amCheck = document.getElementById(`${date}-am-check`);
+                        const amWho = document.getElementById(`${date}-am-who`);
+                        if(amCheck) amCheck.checked = data[date].am.check || false;
+                        if(amWho) amWho.value = data[date].am.who || "";
+                    }
+                    if (data[date].pm) {
+                        const pmCheck = document.getElementById(`${date}-pm-check`);
+                        const pmWho = document.getElementById(`${date}-pm-who`);
+                        if(pmCheck) pmCheck.checked = data[date].pm.check || false;
+                        if(pmWho) pmWho.value = data[date].pm.who || "";
+                    }
+                }
+            }
+        });
     }
 
-    function saveCheckState(id) {
-        localStorage.setItem(id, document.getElementById(id).checked);
-    }
-
-    function saveAssignment(id, value) {
-        localStorage.setItem(id, value);
+    function updateFirebase(date, time, field, value) {
+        db.ref('konijnen_status/' + date + '/' + time).update({ [field]: value });
     }
 
     renderCalendar();
